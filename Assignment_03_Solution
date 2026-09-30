@@ -1,0 +1,41 @@
+import sys
+
+def kruskals(g_nodes, g_from, g_to, g_weight):
+    # Sort by weight, then by (u + v + w) for ties
+    edges = sorted(
+        zip(g_from, g_to, g_weight),
+        key=lambda e: (e[2], e[0] + e[1] + e[2])
+    )
+
+    parent = list(range(g_nodes + 1))
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    total = 0
+    used = 0
+    for u, v, w in edges:
+        ru, rv = find(u), find(v)
+        if ru != rv:          # no cycle
+            parent[rv] = ru
+            total += w
+            used += 1
+            if used == g_nodes - 1:
+                break
+    return total
+
+
+if __name__ == "__main__":
+    g_nodes, g_edges = map(int, input().split())
+
+    g_from, g_to, g_weight = [], [], []
+    for _ in range(g_edges):
+        u, v, w = map(int, input().split())
+        g_from.append(u)
+        g_to.append(v)
+        g_weight.append(w)
+
+    print(kruskals(g_nodes, g_from, g_to, g_weight)
